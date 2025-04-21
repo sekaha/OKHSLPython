@@ -221,6 +221,20 @@ def get_Cs(L, a_, b_):
     return [C_0, C_mid, C_max]
 
 
+def srgb_to_oklab(r, g, b):
+    lab = linear_srgb_to_oklab(
+        srgb_transfer_function_inv(r / 255),
+        srgb_transfer_function_inv(g / 255),
+        srgb_transfer_function_inv(b / 255)
+    )
+    
+    return lab
+
+def oklab_to_srgb(L, a, b):    
+    return [
+        255 * srgb_transfer_function(x) for x in oklab_to_linear_srgb(L, a, b)
+    ]
+
 def okhsl_to_srgb(h, s, l):
     if l == 1:
         return [255, 255, 255]
@@ -248,6 +262,7 @@ def okhsl_to_srgb(h, s, l):
     C = k_0 + t * k_1 / (1 - k_2 * t)
 
     rgb = oklab_to_linear_srgb(L, C * a_, C * b_)
+    
     return [
         255 * srgb_transfer_function(rgb[0]),
         255 * srgb_transfer_function(rgb[1]),
@@ -395,7 +410,7 @@ def rgb_to_hex(r, g, b):
 
     return f"#{component_to_hex(r)}{component_to_hex(g)}{component_to_hex(b)}"
 
-conv = srgb_to_okhsl(255,128,64)
-
-print(conv[0]*360, conv[1], conv[2])
-print(okhsl_to_srgb(*srgb_to_okhsl(255,128,64)))
+def merge_color(c1, c2, t):
+    return tuple(
+        x1 + (x2-x1) * t for (x1, x2) in zip(c1, c2)
+    )
