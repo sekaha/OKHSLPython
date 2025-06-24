@@ -220,6 +220,38 @@ def get_Cs(L, a_, b_):
     
     return [C_0, C_mid, C_max]
 
+def get_max_saturation_lch_l(L):
+    min_C_max = float('inf')
+
+    for h in range(360):
+        a_ = math.sin(math.radians(h))
+        b_ = math.cos(math.radians(h))
+
+        cusp = find_cusp(a_, b_)
+        C_max = find_gamut_intersection(a_, b_, L, 1, L, cusp)
+        min_C_max = min(C_max, min_C_max)
+
+    return min_C_max
+
+
+def oklab_to_oklch(L, a, b):
+    C = (a**2+b**2)**0.5
+    h = math.atan2(b,a)
+    
+    return [L, C, h]
+
+def oklch_to_oklab(L, C, h):
+    a = C * math.cos(h)
+    b = C * math.sin(h)
+
+    return [L, a, b]
+
+def oklch_to_srgb(L, C, h):
+    return oklab_to_srgb(*oklch_to_oklab(L, C, h))
+
+def srgb_to_oklch(r, g, b):
+    return oklab_to_oklch(srgb_to_oklab(r, g, b))
+
 
 def srgb_to_oklab(r, g, b):
     lab = linear_srgb_to_oklab(
