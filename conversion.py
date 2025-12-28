@@ -250,7 +250,7 @@ def oklch_to_srgb(L, C, h):
     return oklab_to_srgb(*oklch_to_oklab(L, C, h))
 
 def srgb_to_oklch(r, g, b):
-    return oklab_to_oklch(srgb_to_oklab(r, g, b))
+    return oklab_to_oklch(*srgb_to_oklab(r, g, b))
 
 
 def srgb_to_oklab(r, g, b):
